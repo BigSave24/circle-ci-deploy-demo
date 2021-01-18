@@ -5,7 +5,7 @@ Resources:
       SecurityGroups:
         - !Ref InstanceSecurityGroup
       KeyName: test-myservers
-      ImageId: "ami-054e49cb26c2fd312"
+      ImageId: "ami-0885b1f6bd170450c"
   InstanceSecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
