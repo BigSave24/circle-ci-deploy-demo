@@ -11,9 +11,9 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - run: aws cloudformation create-stack \
-          --stack-name circleci-demo-deploy \
-          --template-body template.yml \
+      - run: aws cloudformation create-stack
+          --stack-name circleci-demo-deploy
+          --template-body template.yml
           --region=us-east-1
 workflows:
   # Name the workflow "welcome"
