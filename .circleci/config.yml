@@ -16,20 +16,36 @@ jobs:
     #         --template-body file://template.yml
     #         --region=us-east-1
     # create_web_server:
+    # docker:
+    #   - image: python:3.7-alpine3.11
+    # steps:
+    #   - checkout
+    #   - add_ssh_keys:
+    #       fingerprints: [0e:26:07:d1:07:cb:0c:0c:9b:06:5b:e0:f8:50:c1:3d]
+    #   - run:
+    #       name: Install dependencies
+    #       command: |
+    #         apk add --update ansible
+    #   - run:
+    #       name: Configure server
+    #       command: |
+    #         ansible-playbook -i inventory.txt playbook.yml
+  smoke_test_error:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: alpine:latest
     steps:
       - checkout
-      - add_ssh_keys:
-          fingerprints: [0e:26:07:d1:07:cb:0c:0c:9b:06:5b:e0:f8:50:c1:3d]
+      - run: curl -s --head "https://www.kevinedm0nd.com/"
+  print_test_error:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run: return 1
       - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible
-      - run:
-          name: Configure server
-          command: |
-            ansible-playbook -i inventory.txt playbook.yml
+          name: Print Failure Alert
+          command: echo "Job Failure Alert"
+          when: on_fail
 
 workflows:
   # Name the workflow "welcome"
@@ -37,4 +53,5 @@ workflows:
     # Run the welcome/run job in its own container
     jobs:
       - welcome/run
-      - create_infrastructure
+      - smoke_test_error
+      - print_test_error
