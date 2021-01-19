@@ -35,17 +35,16 @@ jobs:
       - image: alpine:latest
     steps:
       - checkout
-      - run: curl -s --head "https://www.kevinedm0nd.com/"
-  print_test_error:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - run: return 1
+      - run: apk add --update curl
       - run:
-          name: Print Failure Alert
-          command: echo "Job Failure Alert"
-          when: on_fail
+          name: smoke test
+          command: |
+            if curl -s --head "https://www.kevinedm0nd.com/"
+            then
+              return 0
+            else
+              return 1
+            fi
 
 workflows:
   # Name the workflow "welcome"
@@ -54,4 +53,3 @@ workflows:
     jobs:
       - welcome/run
       - smoke_test_error
-      - print_test_error
