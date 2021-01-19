@@ -7,14 +7,30 @@ orbs:
 # Orchestrate or schedule a set of jobs
 jobs:
   create_infrastructure:
+    #   docker:
+    #     - image: amazon/aws-cli
+    #   steps:
+    #     - checkout
+    #     - run: aws cloudformation create-stack
+    #         --stack-name circleci-demo-deploy
+    #         --template-body file://template.yml
+    #         --region=us-east-1
+    # create_web_server:
     docker:
-      - image: amazon/aws-cli
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
-      - run: aws cloudformation create-stack
-          --stack-name circleci-demo-deploy
-          --template-body file://template.yml
-          --region=us-east-1
+      - add_ssh_keys:
+          fingerprints: [0e:26:07:d1:07:cb:0c:0c:9b:06:5b:e0:f8:50:c1:3d]
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible
+      - run:
+          name: Configure server
+          command: |
+            ansible-playbook -i inventory.txt playbook.yml
+
 workflows:
   # Name the workflow "welcome"
   welcome:
