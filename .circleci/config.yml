@@ -24,7 +24,7 @@ jobs:
           --region=us-east-1
       - run: return 1
       - destroy_stack
-        when: on_fail
+          when: on_fail
         # create_web_server:
         # docker:
         #   - image: python:3.7-alpine3.11
