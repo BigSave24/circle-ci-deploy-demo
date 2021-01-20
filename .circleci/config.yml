@@ -37,27 +37,27 @@ jobs:
     #       name: Configure server
     #       command: |
     #         ansible-playbook -i inventory.txt playbook.yml
-    smoke_test_error:
-      docker:
-        - image: alpine:latest
-      steps:
-        - checkout
-        - run:
-            name: Error simulation
-            command: |
-              return 1
-        - destroy_stack
-          when: on_fail
-        # - run: apk add --update curl
-        # - run:
-        #     name: smoke test
-        #     command: |
-        #       if curl -s --head "https://www.kevinedm0nd.com/"
-        #       then
-        #         return 0
-        #       else
-        #         return 1
-        #       fi
+  smoke_test_error:
+    docker:
+      - image: alpine:latest
+    steps:
+      - checkout
+      - run:
+          name: Error simulation
+          command: |
+            return 1
+      - destroy_stack
+        when: on_fail
+      # - run: apk add --update curl
+      # - run:
+      #     name: smoke test
+      #     command: |
+      #       if curl -s --head "https://www.kevinedm0nd.com/"
+      #       then
+      #         return 0
+      #       else
+      #         return 1
+      #       fi
 
 workflows:
   # Name the workflow "welcome"
