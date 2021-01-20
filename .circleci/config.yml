@@ -14,52 +14,52 @@ orbs:
 # Orchestrate or schedule a set of jobs
 jobs:
   create_infrastructure:
-      docker:
-        - image: amazon/aws-cli
-      steps:
-        - checkout
-        - run: aws cloudformation create-stack
-            --stack-name circleci-demo-deploy
-            --template-body file://template.yml
-            --region=us-east-1
-        - run: return 1
-        - destroy_stack
-          when: on_fail
-    # create_web_server:
-    # docker:
-    #   - image: python:3.7-alpine3.11
-    # steps:
-    #   - checkout
-    #   - add_ssh_keys:
-    #       fingerprints: [0e:26:07:d1:07:cb:0c:0c:9b:06:5b:e0:f8:50:c1:3d]
-    #   - run:
-    #       name: Install dependencies
-    #       command: |
-    #         apk add --update ansible
-    #   - run:
-    #       name: Configure server
-    #       command: |
-    #         ansible-playbook -i inventory.txt playbook.yml
-  # smoke_test_error:
-  #     docker:
-  #       - image: amazon/aws-cli
-  #     steps:
-  #       - checkout
-  #       - run:
-  #           name: Error simulation
-  #           command: return 1
-  #       - destroy_stack
-  #         when: on_fail
-        # - run: apk add --update curl
-        # - run:
-        #     name: smoke test
-        #     command: |
-        #       if curl -s --head "https://www.kevinedm0nd.com/"
-        #       then
-        #         return 0
-        #       else
-        #         return 1
-        #       fi
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: aws cloudformation create-stack
+          --stack-name circleci-demo-deploy
+          --template-body file://template.yml
+          --region=us-east-1
+      - run: return 1
+      - destroy_stack
+        when: on_fail
+        # create_web_server:
+        # docker:
+        #   - image: python:3.7-alpine3.11
+        # steps:
+        #   - checkout
+        #   - add_ssh_keys:
+        #       fingerprints: [0e:26:07:d1:07:cb:0c:0c:9b:06:5b:e0:f8:50:c1:3d]
+        #   - run:
+        #       name: Install dependencies
+        #       command: |
+        #         apk add --update ansible
+        #   - run:
+        #       name: Configure server
+        #       command: |
+        #         ansible-playbook -i inventory.txt playbook.yml
+      # smoke_test_error:
+      #     docker:
+      #       - image: amazon/aws-cli
+      #     steps:
+      #       - checkout
+      #       - run:
+      #           name: Error simulation
+      #           command: return 1
+      #       - destroy_stack
+      #         when: on_fail
+      # - run: apk add --update curl
+      # - run:
+      #     name: smoke test
+      #     command: |
+      #       if curl -s --head "https://www.kevinedm0nd.com/"
+      #       then
+      #         return 0
+      #       else
+      #         return 1
+      #       fi
 
 workflows:
   # Name the workflow "welcome"
