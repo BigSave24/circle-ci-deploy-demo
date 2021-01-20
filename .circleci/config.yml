@@ -39,7 +39,7 @@ jobs:
     #         ansible-playbook -i inventory.txt playbook.yml
   smoke_test_error:
     docker:
-      - image: alpine:latest
+      - image: amazon/aws-cli
     steps:
       - checkout
       - run:
@@ -47,7 +47,7 @@ jobs:
           command: |
             return 1
       - destroy_stack
-        when: on_fail
+          when: on_fail
       # - run: apk add --update curl
       # - run:
       #     name: smoke test
