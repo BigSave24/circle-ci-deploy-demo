@@ -1,20 +1,27 @@
 # Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 # Use a package of configuration called an orb.
+commands:
+  destroy_stack:
+    steps:
+      - run:
+          name: Destroy stack
+          command: |
+            aws cloudformation delete-stack --stack-name circleci-demo-deploy
 orbs:
   # Declare a dependency on the welcome-orb
   welcome: circleci/welcome-orb@0.4.1
 # Orchestrate or schedule a set of jobs
 jobs:
   create_infrastructure:
-    #   docker:
-    #     - image: amazon/aws-cli
-    #   steps:
-    #     - checkout
-    #     - run: aws cloudformation create-stack
-    #         --stack-name circleci-demo-deploy
-    #         --template-body file://template.yml
-    #         --region=us-east-1
+      docker:
+        - image: amazon/aws-cli
+      steps:
+        - checkout
+        - run: aws cloudformation create-stack
+            --stack-name circleci-demo-deploy
+            --template-body file://template.yml
+            --region=us-east-1
     # create_web_server:
     # docker:
     #   - image: python:3.7-alpine3.11
@@ -30,21 +37,27 @@ jobs:
     #       name: Configure server
     #       command: |
     #         ansible-playbook -i inventory.txt playbook.yml
-  smoke_test_error:
-    docker:
-      - image: alpine:latest
-    steps:
-      - checkout
-      - run: apk add --update curl
-      - run:
-          name: smoke test
-          command: |
-            if curl -s --head "https://www.kevinedm0nd.com/"
-            then
-              return 0
-            else
+    smoke_test_error:
+      docker:
+        - image: alpine:latest
+      steps:
+        - checkout
+        - run:
+            name: Error simulation
+            command: |
               return 1
-            fi
+        - destroy_stack
+          when: on_fail
+        # - run: apk add --update curl
+        # - run:
+        #     name: smoke test
+        #     command: |
+        #       if curl -s --head "https://www.kevinedm0nd.com/"
+        #       then
+        #         return 0
+        #       else
+        #         return 1
+        #       fi
 
 workflows:
   # Name the workflow "welcome"
@@ -52,4 +65,7 @@ workflows:
     # Run the welcome/run job in its own container
     jobs:
       - welcome/run
-      - smoke_test_error
+      - create_infrastructure
+      - smoke_test_error:
+          requires:
+            - create_infrastructure
