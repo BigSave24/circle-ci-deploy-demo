@@ -6,8 +6,7 @@ commands:
     steps:
       - run:
           name: Destroy environment
-          command: |
-            aws cloudformation delete-stack --stack-name circleci-demo-deploy
+          command: aws cloudformation delete-stack --stack-name circleci-demo-deploy
 # Orchestrate or schedule a set of jobs
 jobs:
   create_infrastructure:
