@@ -1,30 +1,51 @@
 # Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 # Use a package of configuration called an orb.
-commands:
-  destroy_environment:
-    steps:
-      - run:
-          name: Destroy environment
-          command: |
-            aws cloudformation delete-stack --stack-name circleci-demo-deploy
-          when: on_fail
+# commands:
+#   destroy_environment:
+#     steps:
+#       - run:
+#           name: Destroy environment
+#           command: |
+#             aws cloudformation delete-stack --stack-name circleci-demo-deploy
+#           when: on_fail
 # Orchestrate or schedule a set of jobs
 jobs:
-  create_infrastructure:
+  create_and_deploy_front_end:
+      docker:
+        - image: amazon/aws-cli
+      steps:
+        - checkout
+        - run: |
+            aws cloudformation deploy \
+              --template-file bucket.yml \
+              --stack-name "${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID:0:7}"
+        - run: aws s3 sync . s3://"${CIRCLE_WORKFLOW_ID}" --delete
+  promote_to_production:
     docker:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - run:
-          name: create stack
-          command: |
-            aws cloudformation create-stack \
-              --stack-name circleci-demo-deploy \
-              --template-body file://template.yml \
-              --region=us-east-1
-      - run: return 1
-      - destroy_environment
+      - run: |
+          aws cloudformation deploy \
+            --template-file cloudfront.yml \
+            --stack-name production-distro \
+            --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID}"
+  # create_infrastructure:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: create stack
+  #         command: |
+  #           aws cloudformation create-stack \
+  #             --stack-name circleci-demo-deploy-${CIRCLE_WORKFLOW_ID}\
+  #             --template-body file://template.yml \
+  #             --region=us-east-1
+  #     - run: return 1
+  #     - destroy_environment
         # when: on_fail
         # create_web_server:
         # docker:
@@ -66,4 +87,7 @@ workflows:
   welcome:
     # Run the welcome/run job in its own container
     jobs:
-      - create_infrastructure
+      - create_and_deploy_front_end
+      - promote_to_production:
+          requires:
+            - create_and_deploy_front_end
