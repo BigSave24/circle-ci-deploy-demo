@@ -6,7 +6,8 @@ commands:
     steps:
       - run:
           name: Destroy environment
-          command: aws cloudformation delete-stack --stack-name circleci-demo-deploy
+          command: |
+            aws cloudformation delete-stack --stack-name circleci-demo-deploy
 # Orchestrate or schedule a set of jobs
 jobs:
   create_infrastructure:
@@ -15,7 +16,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: create infra stack
+          name: create stack
           command: |
             aws cloudformation create-stack \
               --stack-name circleci-demo-deploy \
@@ -59,10 +60,9 @@ jobs:
       #       else
       #         return 1
       #       fi
-
 workflows:
   # Name the workflow "welcome"
   welcome:
     # Run the welcome/run job in its own container
     jobs:
-      - create_infrastructure
+      - build
