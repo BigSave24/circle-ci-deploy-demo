@@ -8,6 +8,7 @@ commands:
           name: Destroy environment
           command: |
             aws cloudformation delete-stack --stack-name circleci-demo-deploy
+          when: on_fail
 # Orchestrate or schedule a set of jobs
 jobs:
   create_infrastructure:
@@ -24,7 +25,7 @@ jobs:
               --region=us-east-1
       - run: return 1
       - destroy_environment
-        when: on_fail
+        # when: on_fail
         # create_web_server:
         # docker:
         #   - image: python:3.7-alpine3.11
@@ -65,4 +66,4 @@ workflows:
   welcome:
     # Run the welcome/run job in its own container
     jobs:
-      - build
+      - create_infrastructure
