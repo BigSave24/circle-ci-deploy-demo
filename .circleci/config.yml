@@ -20,7 +20,7 @@ jobs:
             aws cloudformation deploy \
               --template-file bucket.yml \
               --stack-name ccdd-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides PipelineID=${CIRCLE_WORKFLOW_ID:0:7}
+              --parameter-overrides NAME=ccdd-${CIRCLE_WORKFLOW_ID:0:7}
         - run: aws s3 sync . s3://ccdd-${CIRCLE_WORKFLOW_ID:0:7} --delete
   promote_to_production:
     docker:

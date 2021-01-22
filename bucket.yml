@@ -1,7 +1,6 @@
 Parameters:
   NAME:
     Type: String
-    Default: circleci-deploy-prod
 Resources:
   WebsiteBucket:
     Type: AWS::S3::Bucket
